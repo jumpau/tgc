@@ -53,6 +53,9 @@ api_hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 # Telegram bot token (leave blank to log into self-bot account)
 bot_token = "0000000000:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+[upload]
+auth_code = ""
 ```
 
 After setting up the keys, you can proceed to setting up the channel:
@@ -109,3 +112,4 @@ If you want to automatically backup/sync telegram channel data using GitHub Acti
 2. Make a fork of https://github.com/hykilpikonna/blog-data
 3. In GitHub's Settings tab, create a secret called `TGC_CONFIG`, and paste your `config.toml` there.
 4. Remember to set a `size_limit_mb` to below 100 so that git lfs won't warn you for pushing large files.
+
