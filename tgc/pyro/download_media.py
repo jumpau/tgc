@@ -32,30 +32,51 @@ from pyrogram import types, Client
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES
 from pyrogram.types import Message
+from .config import load_config
+
 
 
 @dataclass
 class UploadConfig:
     auth_code: str = None
+    upload_url: str = None
+    upload_domain: str = None
+    upload_max_retry: int = 3
 
 def load_upload_config(path: str = "config.toml") -> UploadConfig:
-    fp = Path(path)
-    if not fp.is_file():
-        fp = Path(__file__).parent.parent.parent / "config.toml"
-    if not fp.is_file():
-        raise FileNotFoundError(f"Config file not found: {fp}")
-    data = toml.loads(fp.read_text())
+    import os
+    if os.getenv('tgc_config'):
+        data = toml.loads(os.getenv('tgc_config'))
+    else:
+        fp = os.getenv('tgc_config_path')
+        if fp is None or not os.path.isfile(fp):
+            fp = path
+        if fp is None or not os.path.isfile(fp):
+            fp = Path.home() / ".config" / "tgc" / "config.toml"
+        fp = Path(fp)
+        if not fp.is_file():
+            raise FileNotFoundError(f"Config file not found: {fp}")
+        data = toml.loads(fp.read_text())
     upload = data.get("upload", {})
-    return UploadConfig(auth_code=upload.get("auth_code"))
+    return UploadConfig(
+        auth_code=upload.get("auth_code"),
+        upload_url=upload.get("upload_url"),
+        upload_domain=upload.get("upload_domain"),
+        upload_max_retry=int(upload.get("upload_max_retry", 3))
+    )
+
 import time
 
-UPLOAD_URL = "https://all.openjpg.qzz.io/login/upload"
-DOMAIN = "https://all.openjpg.qzz.io"
-MAX_RETRY = 3
-
 try:
-    GLOBAL_AUTH_CODE = load_upload_config().auth_code
+    cfg = load_config()
+    UPLOAD_URL = cfg.upload_url
+    DOMAIN = cfg.upload_domain
+    MAX_RETRY = cfg.upload_max_retry
+    GLOBAL_AUTH_CODE = cfg.upload_auth_code
 except Exception:
+    UPLOAD_URL = ""
+    DOMAIN = ""
+    MAX_RETRY = 3
     GLOBAL_AUTH_CODE = None
 
 def upload_file(file_path, auth_code=None, upload_channel="telegram", server_compress=True, auto_retry=True, upload_name_type="default", return_format="default", upload_folder=None):
