@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tgc"
+description = "Telegram Channel Backup Crawler"
+readme = "README.md"
+authors = [
+    { name = "Azalea Gui", email = "me@hydev.org" }
+]
+requires-python = ">=3.10"
+keywords = ["telegram", "backup"]
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "toml~=0.10.2",
+    "pyrogram~=2.0.100",
+    "tgcrypto~=1.2.5",
+    "requests~=2.28.2",
+    "hypy_utils>=1.0.17",
+    "pillow~=9.4.0",
+    "feedgen~=0.9.0",
+    "markdown~=3.4.1",
+    'importlib-metadata~=6.0.0',
+]
+dynamic = ["version"]
+urls = { Homepage = 'https://github.com/one-among-us/TelegramBackup' }
+
+[tool.setuptools]
+py-modules = ["tgc"]
+packages = ['tgc']
+
+[tool.setuptools.dynamic]
+version = {attr = "tgc.__version__"}
+
+[project.scripts]
+tgc = "tgc.pyro.__main__:run"
+tgce = "tgc.convert_export:run"
